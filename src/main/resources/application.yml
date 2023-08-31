@@ -1,0 +1,66 @@
+# ===============================
+# = Spring Boot Actuator configurations
+# ===============================
+#management endpoints on a separate port
+management:
+  trace.http.enabled: true
+  security.enabled: false # Management port is for internal use only. No need to secure it.
+  endpoints.web.exposure.include: health, info, metrics, trace, prometheus
+  endpoint.health.show-details: always
+  info.env.enabled: true
+
+spring.jackson.serialization:
+  write_dates_as_timestamps: false
+
+  # ===============================
+  # = Mysql configurations
+  # ===============================
+spring.datasource:
+  url: jdbc:mysql://localhost:3306/hracacheprojectdb?useUnicode=true&characterEncoding=UTF8&allowPublicKeyRetrieval=true&useSSL=false
+  username: root
+  password: root
+
+  # ===============================
+  # = Redis configurations
+  # ===============================
+spring.redis:
+  database: 0
+  host: 127.0.0.1
+  port: 6379
+  password: root
+  pool:
+    max-active: 10
+    max-wait: -1
+    max-idle: 8
+    min-idle: 0
+  timeout: 1000
+
+  # ===============================
+  # = JPA configurations
+  # ===============================
+spring.jpa:
+  database: MYSQL
+  show-sql: true
+  hibernate:
+    ddl-auto: update
+  database-platform: MYSQL
+  properties.hibernate:
+    dialect: org.hibernate.dialect.MySQL5Dialect
+
+# ===============================
+# = Logging configurations
+# ===============================
+logging:
+  pattern:
+    console: "%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n"
+    file: "%d %-5level [%thread] %logger{0} : %msg%n"
+  level:
+    root: WARN
+    <logger>: DEBUG
+    uow.msc.project.hracache: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org:
+      hibernate.SQL: DEBUG
+      hibernate.type.descriptor.sql.BasicBinder: TRACE
+  file.name: "log.txt"
