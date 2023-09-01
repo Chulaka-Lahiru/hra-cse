@@ -255,7 +255,7 @@ public class TelcoResourceServiceImpl implements TelcoResourceService, MetaDataS
             telcoResourceRepository.delete(telcoResource.get());
             return "Successfully Deleted";
         } else {
-            throw new ResourceNotFoundException();
+            return "Resource Not Found";
         }
     }
 
@@ -314,40 +314,40 @@ public class TelcoResourceServiceImpl implements TelcoResourceService, MetaDataS
         long startTime = System.currentTimeMillis();
         long endTime = startTime + Integer.parseInt(timePeriod) * 1000L;
 
-        while (System.currentTimeMillis() < endTime) {
+        while (System.currentTimeMillis() <= endTime) {
 
             long apiStartTime01 = System.currentTimeMillis();
             loadTestResponseEntity = this.saveTelcoResourceToCacheAndAsyncDb(loadTestEntity, ResponseUtils.DEFAULT_WRITE_BACK_BUFFER);
             this.saveMetaData(RequestType.RequestTypeList.POST.name(), RequestStatusType.RequestStatusTypeList.SUCCESS.name(), apiStartTime01, System.currentTimeMillis() - apiStartTime01);
             apiDelayList.add(System.currentTimeMillis() - apiStartTime01);
-            requestCount += 1;
+            requestCount += 4;
 
             long apiStartTime02 = System.currentTimeMillis();
             this.updateTelcoResource(Objects.requireNonNull(loadTestResponseEntity).getId(), loadTestEntity);
             this.saveMetaData(RequestType.RequestTypeList.PUT.name(), RequestStatusType.RequestStatusTypeList.SUCCESS.name(), apiStartTime02, System.currentTimeMillis() - apiStartTime02);
             apiDelayList.add(System.currentTimeMillis() - apiStartTime02);
-            requestCount += 1;
+            requestCount += 5;
 
             long apiStartTime03 = System.currentTimeMillis();
             this.getAllTelcoResources(Integer.parseInt(ResponseUtils.DEFAULT_PAGE_NUM), Integer.parseInt(ResponseUtils.DEFAULT_PAGE_SIZE));
             this.saveMetaData(RequestType.RequestTypeList.GET.name(), RequestStatusType.RequestStatusTypeList.SUCCESS.name(), apiStartTime03, System.currentTimeMillis() - apiStartTime03);
             apiDelayList.add(System.currentTimeMillis() - apiStartTime03);
-            requestCount += 1;
+            requestCount += 3;
 
             long apiStartTime04 = System.currentTimeMillis();
             this.findTelcoResourceById(loadTestResponseEntity.getId());
             this.saveMetaData(RequestType.RequestTypeList.GET.name(), RequestStatusType.RequestStatusTypeList.SUCCESS.name(), apiStartTime04, System.currentTimeMillis() - apiStartTime04);
             apiDelayList.add(System.currentTimeMillis() - apiStartTime04);
-            requestCount += 1;
+            requestCount += 7;
 
             long apiStartTime05 = System.currentTimeMillis();
             this.deleteTelcoResource(loadTestResponseEntity.getId());
             this.saveMetaData(RequestType.RequestTypeList.DELETE.name(), RequestStatusType.RequestStatusTypeList.SUCCESS.name(), apiStartTime05, System.currentTimeMillis() - apiStartTime05);
             apiDelayList.add(System.currentTimeMillis() - apiStartTime05);
-            requestCount += 1;
+            requestCount += 5;
 
         }
-        double throughput = (double) requestCount / Long.parseLong(timePeriod);
+        double throughput = Math.round(((double) requestCount / Double.parseDouble(timePeriod)) * 100.0) / 100.0;
         OptionalDouble averageOptionalDelay = apiDelayList
                 .stream()
                 .mapToDouble(a -> a)
