@@ -17,7 +17,6 @@ import uow.msc.project.hracache.model.TelcoResourceEntity;
 import uow.msc.project.hracache.service.MetaDataService;
 import uow.msc.project.hracache.service.TelcoResourceService;
 import uow.msc.project.hracache.service.config.CacheRefreshConfig;
-import uow.msc.project.hracache.service.exception.ResourceNotFoundException;
 import uow.msc.project.hracache.service.util.RequestStatusType;
 import uow.msc.project.hracache.service.util.RequestType;
 import uow.msc.project.hracache.service.util.ResponseUtils;
@@ -179,16 +178,21 @@ public class TelcoResourceServiceImpl implements TelcoResourceService, MetaDataS
         if (!Objects.nonNull(telcoResourceEntity.getCreatedDate()) || telcoResourceEntity.getCreatedDate().isEmpty()) {
             LocalDateTime localDateTime = LocalDateTime.now();
             telcoResourceEntity.setCreatedDate(localDateTime.toString().substring(0, 10) + " " + localDateTime.toString().substring(11, 19));
-        }//ModifiedDate parameter is generated here
+        }
+        //ModifiedDate parameter is generated here
         if (!Objects.nonNull(telcoResourceEntity.getModifiedDate()) || telcoResourceEntity.getModifiedDate().isEmpty()) {
             LocalDateTime localDateTime = LocalDateTime.now();
             telcoResourceEntity.setModifiedDate(localDateTime.toString().substring(0, 10) + " " + localDateTime.toString().substring(11, 19));
-        }//Fetching of the record id of last indexed record in database
+        }
+        //Fetching of the record id of last indexed record in database
         List<TelcoResourceEntity> telcoResourceEntityListForLastId = telcoResourceRepository.findAll(Sort.by("id").descending());
         List<TelcoResourceEntity> telcoResourceEntityListCached = this.getAllCacheRecords();
-        if (telcoResourceEntityListForLastId.size() == 0 && telcoResourceEntityListCached.size() == 0) telcoResourceEntity.setId(1L);
-        else if (telcoResourceEntityListForLastId.size() == 0 && telcoResourceEntityListCached.size() > 0) telcoResourceEntity.setId(telcoResourceEntityListCached.get(0).getId() + 1);
-        else telcoResourceEntity.setId(Long.max(lastCacheWriteBackResourceId + 1, telcoResourceEntityListForLastId.get(0).getId() + 1));
+        if (telcoResourceEntityListForLastId.size() == 0 && telcoResourceEntityListCached.size() == 0)
+            telcoResourceEntity.setId(1L);
+        else if (telcoResourceEntityListForLastId.size() == 0 && telcoResourceEntityListCached.size() > 0)
+            telcoResourceEntity.setId(telcoResourceEntityListCached.get(0).getId() + 1);
+        else
+            telcoResourceEntity.setId(Long.max(lastCacheWriteBackResourceId + 1, telcoResourceEntityListForLastId.get(0).getId() + 1));
 
         // Cache key generation
         String key = "resource_" + telcoResourceEntity.getId();

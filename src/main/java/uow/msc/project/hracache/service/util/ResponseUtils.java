@@ -12,5 +12,6 @@ public class ResponseUtils {
     public static final String DEFAULT_LOAD_TEST_TIME_SEC = "5";
     public final static long CACHE_REFRESH_RATE = 60000;
     public final static long CACHE_REFRESH_INITIAL_DELAY = 2000;
+    public final static int CACHE_REFRESH_RATING_PARAM_THRESHOLD = 5;
 
 }

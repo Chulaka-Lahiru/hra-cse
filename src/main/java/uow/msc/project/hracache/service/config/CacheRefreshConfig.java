@@ -42,7 +42,7 @@ public class CacheRefreshConfig {
             String key = "resource_" + telcoResourceEntity.getId();
             final boolean hasKey = Boolean.TRUE.equals(redisTemplate.hasKey(key));
             //Condition check for record filtering
-            if (!hasKey && telcoResourceEntity.getRating() < 5) {
+            if (!hasKey && telcoResourceEntity.getRating() < ResponseUtils.CACHE_REFRESH_RATING_PARAM_THRESHOLD) {
                 operations.set(key, telcoResourceEntity);
                 log.info("TELCO-RESOURCE-SERVICE: DATA REFRESH TO REDIS: key: " + key + " value: " + telcoResourceEntity);
             }

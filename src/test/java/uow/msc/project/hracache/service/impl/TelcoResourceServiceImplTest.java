@@ -185,8 +185,7 @@ public class TelcoResourceServiceImplTest {
         mock(TelcoResourceEntity.class);
         mock(TelcoResourceRepository.class, Mockito.CALLS_REAL_METHODS);
 
-        assertThatExceptionOfType(ResourceNotFoundException.class)
-                .isThrownBy(() -> telcoResourceServiceImpl.deleteTelcoResource(1L)).withMessage(null);
+        assertEquals(telcoResourceServiceImpl.deleteTelcoResource(5L), "Resource Not Found");
     }
 
     @Test
