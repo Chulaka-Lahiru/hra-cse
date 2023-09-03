@@ -185,9 +185,10 @@ public class TelcoResourceServiceImpl implements TelcoResourceService, MetaDataS
             telcoResourceEntity.setModifiedDate(localDateTime.toString().substring(0, 10) + " " + localDateTime.toString().substring(11, 19));
         }//Fetching of the record id of last indexed record in database
         List<TelcoResourceEntity> telcoResourceEntityListForLastId = telcoResourceRepository.findAll(Sort.by("id").descending());
-        if (telcoResourceEntityListForLastId.size() == 0) telcoResourceEntity.setId(1L);
-        else
-            telcoResourceEntity.setId(Long.max(lastCacheWriteBackResourceId + 1, telcoResourceEntityListForLastId.get(0).getId() + 1));
+        List<TelcoResourceEntity> telcoResourceEntityListCached = this.getAllCacheRecords();
+        if (telcoResourceEntityListForLastId.size() == 0 && telcoResourceEntityListCached.size() == 0) telcoResourceEntity.setId(1L);
+        else if (telcoResourceEntityListForLastId.size() == 0 && telcoResourceEntityListCached.size() > 0) telcoResourceEntity.setId(telcoResourceEntityListCached.get(0).getId() + 1);
+        else telcoResourceEntity.setId(Long.max(lastCacheWriteBackResourceId + 1, telcoResourceEntityListForLastId.get(0).getId() + 1));
 
         // Cache key generation
         String key = "resource_" + telcoResourceEntity.getId();
@@ -320,7 +321,7 @@ public class TelcoResourceServiceImpl implements TelcoResourceService, MetaDataS
             loadTestResponseEntity = this.saveTelcoResourceToCacheAndAsyncDb(loadTestEntity, ResponseUtils.DEFAULT_WRITE_BACK_BUFFER);
             this.saveMetaData(RequestType.RequestTypeList.POST.name(), RequestStatusType.RequestStatusTypeList.SUCCESS.name(), apiStartTime01, System.currentTimeMillis() - apiStartTime01);
             apiDelayList.add(System.currentTimeMillis() - apiStartTime01);
-            requestCount += 4;
+            requestCount += 5;
 
             long apiStartTime02 = System.currentTimeMillis();
             this.updateTelcoResource(Objects.requireNonNull(loadTestResponseEntity).getId(), loadTestEntity);
